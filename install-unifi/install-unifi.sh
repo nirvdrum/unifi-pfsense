@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # install-unifi.sh
-# Installs the Uni-Fi controller software on a FreeBSD machine (presumably running pfSense).
+# Installs the Uni-Fi controller software on a FreeBSD machine or FreeBSD Jail running on FreeNAS.
 
 # The latest version of UniFi:
-UNIFI_SOFTWARE_URL="http://www.ubnt.com/downloads/unifi/4.8.14/UniFi.unix.zip"
+UNIFI_SOFTWARE_URL="https://www.ubnt.com/downloads/unifi/5.5.11-5107276ec2/UniFi.unix.zip"
 
 # The rc script associated with this branch or fork:
-RC_SCRIPT_URL="https://raw.githubusercontent.com/gozoinks/unifi-pfsense/master/rc.d/unifi.sh"
+RC_SCRIPT_URL="https://raw.githubusercontent.com/TechButton/unifi-controller-freebsd-freenas/master/rc.d/unifi.sh"
 
 # If pkg-ng is not yet installed, bootstrap it:
 if ! /usr/sbin/pkg -N 2> /dev/null; then
@@ -72,7 +72,7 @@ echo " done."
 # Install mongodb, OpenJDK, and unzip (required to unpack Ubiquiti's download):
 # -F skips a package if it's already installed, without throwing an error.
 echo "Installing required packages..."
-env ASSUME_ALWAYS_YES=YES /usr/sbin/pkg install mongodb openjdk unzip
+env ASSUME_ALWAYS_YES=YES /usr/sbin/pkg install mongodb openjdk8 unzip pcre v8 snappy
 echo " done."
 
 # Switch to a temp directory for the Unifi download:
@@ -115,8 +115,13 @@ fi
 if [ ! -z "${BACKUPFILE}" ] && [ -f ${BACKUPFILE} ]; then
   echo "Restoring UniFi data..."
   mv /usr/local/UniFi/data /usr/local/UniFi/data-orig
-  /usr/bin/tar -vxzf ${BACKUPFILE}
+  /usr/bin/tar -vxzf ${BACKUPFILE} -C /
 fi
+
+echo "Install snappy java"
+env ASSUME_ALWAYS_YES=YES /usr/sbin/pkg install snappyjava
+/bin/mv /usr/local/UniFi/lib/snappy-java-1.0.5.jar snappy-java-1.0.5.jar.bak
+/bin/ln -s /usr/local/share/java/classes/snappy-java.jar  /usr/local/UniFi/lib/snappy-java-1.0.5.jar
 
 # Start it up:
 echo -n "Starting the unifi service..."
