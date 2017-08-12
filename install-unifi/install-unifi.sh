@@ -3,8 +3,10 @@
 # install-unifi.sh
 # Installs the Uni-Fi controller software on a FreeBSD machine or FreeBSD Jail running on FreeNAS.
 
+UNIFI_VERSION=5.5.20
+
 # The latest version of UniFi:
-UNIFI_SOFTWARE_URL="https://www.ubnt.com/downloads/unifi/5.5.11-5107276ec2/UniFi.unix.zip"
+UNIFI_SOFTWARE_URL="https://www.ubnt.com/downloads/unifi/${UNIFI_VERSION}/UniFi.unix.zip"
 
 # The rc script associated with this branch or fork:
 RC_SCRIPT_URL="https://raw.githubusercontent.com/TechButton/unifi-controller-freebsd-freenas/master/rc.d/unifi.sh"
